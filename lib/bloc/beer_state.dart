@@ -38,8 +38,3 @@ class BeerError extends BeerState {
   @override
   List<Object> get props => [msg];
 }
-
-class RefreshBeersDone extends BeerState {
-  @override
-  List<Object> get props => [];
-}

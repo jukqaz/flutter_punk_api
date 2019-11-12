@@ -112,8 +112,21 @@ class _MyHomePageState extends State<MyHomePage> {
                           final beer = state.beers[index];
                           return ListTile(
                             leading: Image.network(beer.imageUrl),
-                            title: Text('${beer.id.round()} - ${beer.name}'),
+                            title: Text('${beer.id.toInt()} - ${beer.name}'),
                             subtitle: Text('${beer.firstBrewed}'),
+                            onTap: () => Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    BlocProvider<BeerDetailBloc>(
+                                  builder: (context) => BeerDetailBloc()
+                                    ..dispatch(
+                                      GetBeerDetail(id: beer.id),
+                                    ),
+                                  child: BeerDetailScreen(),
+                                ),
+                              ),
+                            ),
                           );
                         },
                         childCount: state.hasReachedMax
@@ -133,5 +146,51 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ],
         ),
+      );
+}
+
+class BeerDetailScreen extends StatefulWidget {
+  @override
+  _BeerDetailScreenState createState() => _BeerDetailScreenState();
+}
+
+class _BeerDetailScreenState extends State<BeerDetailScreen> {
+  final _formKey = GlobalKey<FormState>();
+
+  TextEditingController _nameTextEditingController;
+
+  @override
+  void initState() {
+    super.initState();
+
+    _nameTextEditingController = TextEditingController();
+  }
+
+  @override
+  void dispose() {
+    _nameTextEditingController.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) =>
+      BlocBuilder<BeerDetailBloc, BeerDetailState>(
+        builder: (context, state) => Scaffold(
+            appBar: AppBar(
+              title: Text('Beer Detail'),
+            ),
+            body: Form(
+              key: _formKey,
+              child: Column(
+                children: <Widget>[
+                  TextFormField(
+                    controller: _nameTextEditingController
+                      ..text = state is BeerDetailLoaded ? state.beer.name : '',
+                    enabled: state is BeerDetailLoaded,
+                  ),
+                ],
+              ),
+            ),
+          ),
       );
 }

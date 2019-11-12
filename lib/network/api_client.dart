@@ -46,4 +46,17 @@ class APIClient {
       rethrow;
     }
   }
+
+  Future<Beer> getBeerDetail({double id}) async {
+    try {
+      final res = await _dio.get('/beers/${id.toInt()}');
+      if (res.statusCode == HttpStatus.ok) {
+        return Beer.fromJson(res.data[0]);
+      } else {
+        throw res.statusMessage;
+      }
+    } catch (e) {
+      rethrow;
+    }
+  }
 }
